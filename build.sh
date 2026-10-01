@@ -1,16 +1,15 @@
 #!/bin/sh
-# Creates output/<folder>.pdf for every folder in source/.
+# Creates output/document.pdf with all folders in source/.
 # Usage: ./build.sh
 cd "$(dirname "$0")"
 mkdir -p output
 
-for dir in source/*/; do
-  item=$(basename "$dir")
-  # image file names, one per line, sorted alphabetically
-  images=$(ls "$dir" | grep -iE '\.(jpe?g|png)$' | sort)
-  echo "source/$item -> output/$item.pdf"
-  typst compile --root . \
-    --input item="$item" \
-    --input images="$images" \
-    template.typ "output/$item.pdf"
-done
+# folder names and images ("folder/name"), one per line, sorted alphabetically
+items=$(cd source && ls -d */ | sed 's|/$||' | sort)
+images=$(cd source && ls */* | grep -iE '\.(jpe?g|png)$' | sort)
+
+echo "source/ -> output/document.pdf"
+typst compile --root . \
+  --input items="$items" \
+  --input images="$images" \
+  template.typ output/document.pdf
