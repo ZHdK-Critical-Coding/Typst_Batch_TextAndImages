@@ -4,12 +4,14 @@
 cd "$(dirname "$0")"
 mkdir -p output
 
-# folder names and images ("folder/name"), one per line, sorted alphabetically
+# folder names, images and texts ("folder/name"), one per line, sorted alphabetically
 items=$(cd source && ls -d */ | sed 's|/$||' | sort)
 images=$(cd source && ls */* | grep -iE '\.(jpe?g|png)$' | sort)
+texts=$(cd source && ls */* | grep -iE '\.txt$' | sort)
 
 echo "source/ -> output/document.pdf"
 typst compile --root . \
   --input items="$items" \
   --input images="$images" \
+  --input texts="$texts" \
   template.typ output/document.pdf

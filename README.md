@@ -3,8 +3,8 @@
 [Deutsch](README_DE.md)
 
 Turns all folders in `source/` into one PDF: every folder starts on a new
-page with the text from `text.txt`, followed by every image in the folder
-on a page of its own. One template, any amount of material – add a folder and run the
+page with the text from its `.txt` file (optional, any name), followed by
+every image in the folder on a page of its own. One template, any amount of material – add a folder and run the
 script again. Written in [Typst](https://typst.app), a modern, fast
 alternative to LaTeX with a readable markup language.
 
@@ -40,7 +40,8 @@ The source material lies in `source/`, one folder per section:
 ```
 source/
   glacier/
-    text.txt     first line: title; an empty line starts a new paragraph
+    text.txt     optional, any name ending in .txt (the first one is used);
+                 an empty line starts a new paragraph
     01.jpg       images (jpg, png), placed in alphabetical order
     02.jpg
   harbour/
@@ -66,9 +67,9 @@ Typst cannot list the files of a folder by itself. The build script does
 that and hands the lists to Typst, which builds the whole PDF in one run.
 
 - **`build.sh` / `build.ps1`**: collect the folder names in `source/`
-  and the images of all folders as `folder/name` (`jpg`, `jpeg`, `png`,
-  sorted by name), then call
-  `typst compile --root . --input items=<folders> --input images=<images> template.typ output/document.pdf`.
+  the images of all folders as `folder/name` (`jpg`, `jpeg`, `png`,
+  sorted by name) and the `.txt` files the same way, then call
+  `typst compile --root . --input items=<folders> --input images=<images> --input texts=<texts> template.typ output/document.pdf`.
   `--input` hands values to the template, `--root .` allows the template
   to read files anywhere in the repository. Extend the pattern
   `\.(jpe?g|png)$` for other file types (Typst also reads `gif`, `svg`
@@ -84,8 +85,9 @@ that and hands the lists to Typst, which builds the whole PDF in one run.
 - **`template.typ` → folders**: `for item in items` builds one section
   per folder. `pagebreak(weak: true)` starts every section on a new page
   (but adds no empty page at the very beginning).
-- **`template.typ` → text**: `read()` loads `text.txt` as a string. The
-  first line becomes the title, the rest is split at empty lines into
+- **`template.typ` → text**: `texts.filter(...)` picks the `.txt` files of
+  the folder; if there is none, the folder gets no text page. `read()`
+  loads the first one as a string, which is split at empty lines into
   paragraphs. The text is used as plain text, so characters like `*`, `_`
   or `#` are printed as they are.
 - **`template.typ` → images**: `images.filter(...)` picks the images whose

@@ -3,7 +3,7 @@
 [English](README.md)
 
 Macht aus allen Ordnern in `source/` ein PDF: jeder Ordner beginnt auf
-einer neuen Seite mit dem Text aus `text.txt`, danach folgt jedes Bild aus
+einer neuen Seite mit dem Text aus seiner `.txt`-Datei (optional, beliebiger Name), danach folgt jedes Bild aus
 dem Ordner auf einer eigenen Seite. Eine Vorlage, beliebig viel Material – einen Ordner hinzufügen und das
 Script nochmals ausführen. Geschrieben in
 [Typst](https://typst.app), einer modernen, schnellen Alternative zu LaTeX
@@ -41,7 +41,8 @@ Das Ausgangsmaterial liegt in `source/`, ein Ordner pro Abschnitt:
 ```
 source/
   glacier/
-    text.txt     erste Zeile: Titel; eine Leerzeile beginnt einen neuen Absatz
+    text.txt     optional, beliebiger Name mit Endung .txt (die erste wird verwendet);
+                 eine Leerzeile beginnt einen neuen Absatz
     01.jpg       Bilder (jpg, png), in alphabetischer Reihenfolge gesetzt
     02.jpg
   harbour/
@@ -68,8 +69,8 @@ ganze PDF in einem Durchgang erzeugt.
 
 - **`build.sh` / `build.ps1`**: sammeln die Ordnernamen in `source/` und die
   Bilder aller Ordner als `ordner/name` (`jpg`, `jpeg`, `png`, nach Namen
-  sortiert) und rufen
-  `typst compile --root . --input items=<ordner> --input images=<bilder> template.typ output/document.pdf`
+  sortiert) sowie die `.txt`-Dateien auf dieselbe Weise und rufen
+  `typst compile --root . --input items=<ordner> --input images=<bilder> --input texts=<texte> template.typ output/document.pdf`
   auf. `--input` übergibt Werte an die Vorlage, `--root .` erlaubt der
   Vorlage, Dateien überall im Repository zu lesen. Für andere Dateitypen
   das Muster `\.(jpe?g|png)$` erweitern (Typst liest auch `gif`, `svg` und
@@ -86,9 +87,10 @@ ganze PDF in einem Durchgang erzeugt.
 - **`template.typ` → Ordner**: `for item in items` baut einen Abschnitt
   pro Ordner. `pagebreak(weak: true)` beginnt jeden Abschnitt auf einer
   neuen Seite (ohne ganz am Anfang eine leere Seite einzufügen).
-- **`template.typ` → Text**: `read()` lädt `text.txt` als String. Die
-  erste Zeile wird zum Titel, der Rest wird bei Leerzeilen in Absätze
-  aufgeteilt. Der Text wird als reiner Text verwendet, Zeichen wie `*`,
+- **`template.typ` → Text**: `texts.filter(...)` wählt die `.txt`-Dateien
+  des Ordners; gibt es keine, erhält der Ordner keine Textseite. `read()`
+  lädt die erste davon als String, der bei Leerzeilen in Absätze
+  aufgeteilt wird. Der Text wird als reiner Text verwendet, Zeichen wie `*`,
   `_` oder `#` erscheinen also unverändert.
 - **`template.typ` → Bilder**: `images.filter(...)` wählt die Bilder,
   deren Pfad mit dem Ordnernamen beginnt. Für jedes Bild erzeugt
