@@ -19,4 +19,4 @@ $images = Get-Files '^\.(jpe?g|png)$'
 $texts = Get-Files '^\.txt$'
 
 Write-Host "source/ -> output/document.pdf"
-typst compile --root . --input "items=$items" --input "images=$images" --input "texts=$texts" template.typ output/document.pdf
+typst compile --root . --font-path fonts --input "items=$items" --input "images=$images" --input "texts=$texts" template.typ output/document.pdf

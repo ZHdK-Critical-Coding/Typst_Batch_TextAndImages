@@ -30,9 +30,11 @@ Typst installieren:
   entpacken und das Programm `typst` in einen Ordner im `PATH` legen.
 
 Die Installation mit `typst --version` prüfen. Weitere Bibliotheken
-braucht es nicht; Typst bringt eigene Schriften mit.
+braucht es nicht. Die Schrift TeX Gyre Heros (ein freier Helvetica-Klon)
+liegt in `fonts/`, so sieht das PDF auf jedem Computer und auf GitHub
+gleich aus.
 
-Lizenz: MIT
+Lizenz: MIT. Schrift: TeX Gyre Heros, [GUST Font License](fonts/GUST-FONT-LICENSE.txt).
 
 ## Ausführen
 
@@ -62,6 +64,31 @@ Um am Layout zu arbeiten, `template.typ` in VS Code öffnen und die
 Tinymist-Vorschau starten: ohne Werte vom Script zeigt die Vorlage den
 Ordner `glacier`.
 
+## Auf GitHub
+
+Jeder Push auf `main` erzeugt das PDF auf GitHub
+(`.github/workflows/build.yml`, mit
+[GitHub Action for Typst](https://github.com/marketplace/actions/github-action-for-typst)).
+Herunterladen im Tab **Actions**: den Durchlauf öffnen, dann oben auf
+**Download document.pdf** klicken (oder unten **Artifacts →
+document.pdf**). Dazu muss man bei GitHub angemeldet sein; das PDF wird
+90 Tage aufbewahrt. **Run workflow** startet einen Build von Hand.
+
+Ein Tag, der mit `v` beginnt, erzeugt zusätzlich ein Release mit dem PDF:
+
+```sh
+git tag v1.0
+git push origin v1.0
+```
+
+Die Action führt nur `typst compile <optionen> template.typ` aus. Der
+Schritt davor ruft `./build.sh --options` auf, das dieselben Optionen wie
+ein lokaler Build ausgibt, eine pro Zeile; die Listen sind mit `|` statt
+mit Zeilenumbrüchen verbunden, weil die Action die Optionen an
+Zeilenumbrüchen trennt. Die Action schreibt `template.pdf`, das danach in
+`output/document.pdf` umbenannt wird. Verwendet wird die neueste
+Typst-Version.
+
 ## Coding-Hilfe
 
 Typst kann die Dateien eines Ordners nicht selbst auflisten. Das übernimmt das Build-Script; es übergibt die Listen an Typst, das das
@@ -70,9 +97,11 @@ ganze PDF in einem Durchgang erzeugt.
 - **`build.sh` / `build.ps1`**: sammeln die Ordnernamen in `source/` und die
   Bilder aller Ordner als `ordner/name` (`jpg`, `jpeg`, `png`, nach Namen
   sortiert) sowie die `.txt`-Dateien auf dieselbe Weise und rufen
-  `typst compile --root . --input items=<ordner> --input images=<bilder> --input texts=<texte> template.typ output/document.pdf`
+  `typst compile --root . --font-path fonts --input items=<ordner> --input images=<bilder> --input texts=<texte> template.typ output/document.pdf`
   auf. `--input` übergibt Werte an die Vorlage, `--root .` erlaubt der
-  Vorlage, Dateien überall im Repository zu lesen. Für andere Dateitypen
+  Vorlage, Dateien überall im Repository zu lesen, `--font-path fonts`
+  lädt die Schrift in `fonts/`. `./build.sh --options` gibt nur diese
+  Optionen aus (verwendet auf GitHub). Für andere Dateitypen
   das Muster `\.(jpe?g|png)$` erweitern (Typst liest auch `gif`, `svg` und
   `webp`).
 - **`template.typ` → Eingaben**: `sys.inputs.at("items", default: …)` liest

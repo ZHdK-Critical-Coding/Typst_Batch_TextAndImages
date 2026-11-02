@@ -29,9 +29,10 @@ Install Typst:
   unpack it and put the `typst` program into a folder in your `PATH`.
 
 Check the installation with `typst --version`. No other libraries are
-needed; Typst brings its own fonts.
+needed. The font TeX Gyre Heros (a free Helvetica clone) is included in
+`fonts/`, so the PDF looks the same on every computer and on GitHub.
 
-License: MIT
+License: MIT. Font: TeX Gyre Heros, [GUST Font License](fonts/GUST-FONT-LICENSE.txt).
 
 ## How to Run
 
@@ -61,6 +62,30 @@ To work on the layout, open `template.typ` in VS Code and start the
 Tinymist preview: without inputs from the script, the template shows the
 folder `glacier`.
 
+## On GitHub
+
+Every push to `main` builds the PDF on GitHub
+(`.github/workflows/build.yml`, with
+[GitHub Action for Typst](https://github.com/marketplace/actions/github-action-for-typst)).
+Download it in the **Actions** tab: open the run, then click
+**Download document.pdf** at the top of the page (or **Artifacts →
+document.pdf** at the bottom). You have to be signed in to GitHub; the
+PDF is kept for 90 days. **Run workflow** starts a build by hand.
+
+A tag starting with `v` also creates a release with the PDF attached:
+
+```sh
+git tag v1.0
+git push origin v1.0
+```
+
+The action only runs `typst compile <options> template.typ`. The step
+before it runs `./build.sh --options`, which prints the same options as a
+local build, one per line; the lists are joined with `|` instead of line
+breaks, because the action splits the options at line breaks. The action
+writes `template.pdf`, which is then renamed to `output/document.pdf`.
+It uses the latest Typst version.
+
 ## Coding Help
 
 Typst cannot list the files of a folder by itself. The build script does
@@ -69,9 +94,11 @@ that and hands the lists to Typst, which builds the whole PDF in one run.
 - **`build.sh` / `build.ps1`**: collect the folder names in `source/`
   the images of all folders as `folder/name` (`jpg`, `jpeg`, `png`,
   sorted by name) and the `.txt` files the same way, then call
-  `typst compile --root . --input items=<folders> --input images=<images> --input texts=<texts> template.typ output/document.pdf`.
+  `typst compile --root . --font-path fonts --input items=<folders> --input images=<images> --input texts=<texts> template.typ output/document.pdf`.
   `--input` hands values to the template, `--root .` allows the template
-  to read files anywhere in the repository. Extend the pattern
+  to read files anywhere in the repository, `--font-path fonts` loads the
+  font in `fonts/`. `./build.sh --options` only prints these options
+  (used on GitHub). Extend the pattern
   `\.(jpe?g|png)$` for other file types (Typst also reads `gif`, `svg`
   and `webp`).
 - **`template.typ` → inputs**: `sys.inputs.at("items", default: …)` reads

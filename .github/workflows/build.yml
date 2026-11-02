@@ -1,0 +1,54 @@
+# Builds output/document.pdf on GitHub with every push and offers it for
+# download: Actions → (run) → link at the top, or Artifacts at the bottom. Pushing a tag like v1.0
+# also creates a release with the PDF attached.
+name: Build PDF
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:      # "Run workflow" button in the Actions tab
+
+permissions:
+  contents: write         # needed to create releases
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      # The action cannot run build.sh, so build.sh --options lists the folders,
+      # images and texts and prints the typst options, one per line.
+      - id: lists
+        run: |
+          {
+            echo 'options<<EOF'
+            ./build.sh --options
+            echo 'EOF'
+          } >> "$GITHUB_OUTPUT"
+
+      # Typst in a container: typst compile <options> template.typ -> template.pdf
+      - uses: lvignoli/typst-action@main
+        with:
+          source_file: template.typ
+          options: ${{ steps.lists.outputs.options }}
+
+      - run: mv template.pdf output/document.pdf
+
+      # upload the PDF as it is (not zipped), artifact name: document.pdf
+      - uses: actions/upload-artifact@v7
+        id: upload
+        with:
+          path: output/document.pdf
+          archive: false
+
+      # download link at the top of the run's summary page
+      - run: echo "### [Download document.pdf](${{ steps.upload.outputs.artifact-url }})" >> "$GITHUB_STEP_SUMMARY"
+
+      # only for tags (v1.0, v2.3, …): release with the PDF
+      - if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: output/document.pdf
