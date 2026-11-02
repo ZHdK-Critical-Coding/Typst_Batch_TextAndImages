@@ -68,16 +68,16 @@ Every push to `main` builds the PDF on GitHub
 (`.github/workflows/build.yml`, with
 [GitHub Action for Typst](https://github.com/marketplace/actions/github-action-for-typst)).
 Download it in the **Actions** tab: open the run, then click
-**Download document.pdf** at the top of the page (or **Artifacts →
-document.pdf** at the bottom). You have to be signed in to GitHub; the
+**Download document_….pdf** at the top of the page (or **Artifacts →
+document_….pdf** at the bottom). The file name contains the creation
+date (Zurich time), e.g. `document_2026-11-02_1804.pdf`. You have to be signed in to GitHub; the
 PDF is kept for 90 days. **Run workflow** starts a build by hand.
 
-The latest PDF is also published on GitHub Pages, together with the
-date of the build and the number of pages:
-<https://zhdk-critical-coding.github.io/Typst_Batch_TextAndImages/>
-(direct link: [document.pdf](https://zhdk-critical-coding.github.io/Typst_Batch_TextAndImages/document.pdf)),
-no sign-in needed. For your own copy of the repository, choose
-**Settings → Pages → Source: GitHub Actions** once.
+The latest PDF, with build date and page count, is always on the
+GitHub Page: <https://zhdk-critical-coding.github.io/Typst_Batch_TextAndImages/>. `site/index.html` is the page; the workflow
+fills in `{{FILE}}` (the dated file name), `{{DATE}}` and `{{PAGES}}` (from `pdfinfo`) and
+publishes it together with the PDF. For your own repository, first set
+**Settings → Pages → Source** to **GitHub Actions**.
 
 A tag starting with `v` also creates a release with the PDF attached:
 
