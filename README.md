@@ -75,7 +75,7 @@ PDF is kept for 90 days. **Run workflow** starts a build by hand.
 
 The latest PDF, with build date and page count, is always on the
 GitHub Page: <https://zhdk-critical-coding.github.io/Typst_Batch_TextAndImages/>. `site/index.html` is the page; the workflow
-fills in `{{FILE}}` (the dated file name), `{{DATE}}` and `{{PAGES}}` (from `pdfinfo`) and
+fills in `{{FILE}}` (the dated file name), `{{DATE}}` and `{{PAGES}}` (read from the PDF) and
 publishes it together with the PDF. For your own repository, first set
 **Settings → Pages → Source** to **GitHub Actions**.
 

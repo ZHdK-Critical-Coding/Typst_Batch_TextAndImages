@@ -64,18 +64,18 @@ jobs:
         with:
           files: output/${{ steps.pdf.outputs.file }}
 
-      # GitHub Page: site/index.html with file name, date and page count
-      # (from pdfinfo), plus the PDF
+      # GitHub Page: site/index.html with file name, date and page count,
+      # plus the PDF. Typst writes the page count as plain text into the PDF
+      # ("/Type/Pages/Count 11"), so grep can read it, no extra tools needed.
       - name: Prepare GitHub Page
         if: github.ref == 'refs/heads/main'
         env:
           FILE: ${{ steps.pdf.outputs.file }}
           DATE: ${{ steps.pdf.outputs.date }}
         run: |
-          command -v pdfinfo > /dev/null || sudo apt-get install -y -qq poppler-utils
           mkdir -p _site
           cp "output/$FILE" _site/
-          pages=$(pdfinfo output/document.pdf | awk '/^Pages:/ {print $2}')
+          pages=$(grep -a -o '/Type */Pages */Count *[0-9]*' output/document.pdf | grep -o '[0-9]*$')
           sed -e "s/{{FILE}}/$FILE/g" -e "s/{{PAGES}}/$pages/" -e "s/{{DATE}}/$DATE/" \
             site/index.html > _site/index.html
 

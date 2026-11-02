@@ -77,7 +77,7 @@ document_….pdf**). Der Dateiname enthält das Erstellungsdatum
 
 Das neueste PDF, mit Datum und Seitenzahl, steht immer auf der
 GitHub Page: <https://zhdk-critical-coding.github.io/Typst_Batch_TextAndImages/>. `site/index.html` ist die Seite; der Workflow
-setzt `{{FILE}}` (den Dateinamen mit Datum), `{{DATE}}` und `{{PAGES}}` (aus `pdfinfo`) ein und
+setzt `{{FILE}}` (den Dateinamen mit Datum), `{{DATE}}` und `{{PAGES}}` (aus dem PDF gelesen) ein und
 veröffentlicht sie zusammen mit dem PDF. Für ein eigenes Repository zuerst
 **Settings → Pages → Source** auf **GitHub Actions** stellen.
 
