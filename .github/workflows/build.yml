@@ -1,6 +1,7 @@
 # Builds output/document.pdf on GitHub with every push and offers it for
 # download: Actions → (run) → link at the top, or Artifacts at the bottom. Pushing a tag like v1.0
-# also creates a release with the PDF attached.
+# also creates a release with the PDF attached. Pushes to main also publish the
+# PDF on GitHub Pages: https://zhdk-critical-coding.github.io/Typst_Batch_TextAndImages/
 name: Build PDF
 
 on:
@@ -10,12 +11,11 @@ on:
   pull_request:
   workflow_dispatch:      # "Run workflow" button in the Actions tab
 
-permissions:
-  contents: write         # needed to create releases
-
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write     # needed to create releases
     steps:
       - uses: actions/checkout@v5
 
@@ -52,3 +52,54 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: output/document.pdf
+
+      # ---- GitHub Pages: site/ with the PDF and an index.html ----
+      # page count from pdfinfo, date and time of the build in Zurich time
+      - if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        run: |
+          command -v pdfinfo > /dev/null || sudo apt-get install -y -qq poppler-utils
+          mkdir -p site
+          cp output/document.pdf site/
+          pages=$(pdfinfo site/document.pdf | awk '/^Pages:/ {print $2}')
+          date=$(TZ=Europe/Zurich date '+%d.%m.%Y, %H:%M')
+          commit=$(git rev-parse --short HEAD)
+          cat > site/index.html <<EOF
+          <!doctype html>
+          <html lang="en">
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1">
+          <title>Typst: Text and Images</title>
+          <style>
+            body { font: 18px/1.5 Helvetica, Arial, sans-serif; max-width: 34em;
+                   margin: 3em auto; padding: 0 1em; color: #111; background: #fff; }
+            a { color: inherit; }
+            .pdf { display: inline-block; font-size: 1.4em; margin: .5em 0; }
+            .meta { color: #666; }
+          </style>
+          <h1>Typst: Text and Images</h1>
+          <a class="pdf" href="document.pdf">Download document.pdf</a>
+          <p class="meta">Built on $date · $pages pages ·
+            commit <a href="${{ github.server_url }}/${{ github.repository }}/commit/$commit">$commit</a></p>
+          <p class="meta"><a href="${{ github.server_url }}/${{ github.repository }}">Source on GitHub</a></p>
+          </html>
+          EOF
+
+      - if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: site
+
+  # publish site/ on GitHub Pages (only for main, not for pull requests or tags)
+  deploy:
+    needs: build
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/deploy-pages@v5
+        id: deployment

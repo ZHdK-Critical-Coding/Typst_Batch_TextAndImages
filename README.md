@@ -72,6 +72,13 @@ Download it in the **Actions** tab: open the run, then click
 document.pdf** at the bottom). You have to be signed in to GitHub; the
 PDF is kept for 90 days. **Run workflow** starts a build by hand.
 
+The latest PDF is also published on GitHub Pages, together with the
+date of the build and the number of pages:
+<https://zhdk-critical-coding.github.io/Typst_Batch_TextAndImages/>
+(direct link: [document.pdf](https://zhdk-critical-coding.github.io/Typst_Batch_TextAndImages/document.pdf)),
+no sign-in needed. For your own copy of the repository, choose
+**Settings → Pages → Source: GitHub Actions** once.
+
 A tag starting with `v` also creates a release with the PDF attached:
 
 ```sh
