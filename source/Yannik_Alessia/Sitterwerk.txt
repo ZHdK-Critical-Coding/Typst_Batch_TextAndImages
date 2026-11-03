@@ -1,5 +1,0 @@
-1. im ersten Stapel haben wir nach Büchern gesucht, die Farbiges Papier verwenen (Cover ausgeschlossen) Sortiert wurden die Bücher nach Prozentsatz, wie viele der Seiten des Buches farbiges Papier verwenden.
-
-2. Unsere anderen beiden Stapel sind Bücher, bei denen die Buchkannten (Rücken ausgeschlossen) farbig angemalen wurden. Es gibt zwei Stapel davon. Im ersten ist nur die obere Kante bunt und dieser Stapel wurde nach Buchdicke sortiert.
-
-Beim zweiten Stapel wuren alle drei Kanten farbig angemalen. Hier haben wir den Stapel farblich sortiert.
